@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func Benchmark_TensorFlow_Mat_Sub(b *testing.B) {
+func Benchmark_TensorFlow_Mat_Sub_100x100(b *testing.B) {
 	_ = os.Setenv("TF_CPP_MIN_LOG_LEVEL", "3")
 	root := op.NewScope()
 	X := op.Placeholder(root.SubScope("input"), tf.Float, op.PlaceholderShape(tf.MakeShape(1000, 1000)))
@@ -24,7 +24,32 @@ func Benchmark_TensorFlow_Mat_Sub(b *testing.B) {
 	}
 }
 
-func Benchmark_GoNum_Mat_Sub(b *testing.B) {
+func Benchmark_TensorFlow_Mat_Sub_1000x1000(b *testing.B) {
+	_ = os.Setenv("TF_CPP_MIN_LOG_LEVEL", "3")
+	root := op.NewScope()
+	X := op.Placeholder(root.SubScope("input"), tf.Float, op.PlaceholderShape(tf.MakeShape(1000, 1000)))
+	Y := op.Placeholder(root.SubScope("input"), tf.Float, op.PlaceholderShape(tf.MakeShape(1000, 1000)))
+	product := op.MatMul(root, X, Y)
+	graph, _ := root.Finalize()
+	sess, _ := tf.NewSession(graph, &tf.SessionOptions{})
+	x, _ := tf.NewTensor(randomMatrixFloat64(1000, 1000))
+	y, _ := tf.NewTensor(randomMatrixFloat64(1000, 1000))
+	for i := 0; i < b.N; i++ {
+		_, _ = sess.Run(map[tf.Output]*tf.Tensor{X: x, Y: y}, []tf.Output{product}, nil)
+	}
+}
+
+func Benchmark_GoNum_Mat_Sub_100x100(b *testing.B) {
+	x := mat.NewDense(100, 100, randomVectorFloats64(10000))
+	y := mat.NewDense(100, 100, randomVectorFloats64(10000))
+	z := mat.NewDense(100, 100, randomVectorFloats64(10000))
+	for i := 0; i < b.N; i++ {
+		z.Zero()
+		z.Sub(x, y)
+	}
+}
+
+func Benchmark_GoNum_Mat_Sub_1000x1000(b *testing.B) {
 	x := mat.NewDense(1000, 1000, randomVectorFloats64(1000000))
 	y := mat.NewDense(1000, 1000, randomVectorFloats64(1000000))
 	z := mat.NewDense(1000, 1000, randomVectorFloats64(1000000))

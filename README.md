@@ -43,3 +43,24 @@ Now run your first TensorFlow program with Go:
     go run hello_tf.go
     
     Hello from TensorFlow version 1.15.0
+
+## Benchmark
+
+Try a TensorFlow benchmark of a Matrix Subtraction:
+
+    go test -bench mat_sub_tf_test.go
+    
+    goos: linux
+    goarch: amd64
+    pkg: github.com/andygeiss/machine-learning-golang/project
+    Benchmark_TensorFlow_NewScope-4                   140017             10038 ns/op
+    Benchmark_TensorFlow_Scope_Finalize-4           455846677                2.42 ns/op
+    Benchmark_TensorFlow_NewSession-4                    655           1741003 ns/op
+    Benchmark_TensorFlow_Session_Run-4                 62317             18037 ns/op
+    Benchmark_TensorFlow_Mat_Sub_100x100-4            237834              4982 ns/op
+    Benchmark_TensorFlow_Mat_Sub_1000x1000-4          201316              5131 ns/op
+    Benchmark_GoNum_Mat_Sub_100x100-4                  42163             28339 ns/op
+    Benchmark_GoNum_Mat_Sub_1000x1000-4                  290           3910920 ns/op
+    PASS
+    ok      github.com/andygeiss/machine-learning-golang/project    13.498s
+
